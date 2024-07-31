@@ -1,0 +1,67 @@
+replicaCount: 1
+
+config:
+  clientID: oauth2-proxy
+  clientSecret: "ASZdnRfaEZoNHVxWFYFvdpChwo1bD1YR"
+  cookieSecret: "rBsEjPSaPQJkBmoyH7NnU6c7W3MxQlDJjI-eImv0zsg="
+  cookieName: "_oauth2_proxy"
+  configFile: |-
+    #upstreams =  ["http://onms-core.default.svc.cluster.local:8980"]
+    redirect_url = "https://onms-core.opennms.microk8s.dagonships.com/oauth2/callback"
+    code_challenge_method = "plain"
+    skip_provider_button = true
+    #auth_logging = true
+    #standard_logging = true
+    #request_logging = true
+    #silence_ping_logging = true
+    #errors_to_info_log = true
+    reverse_proxy = true
+    #skip_auth_strip_headers = false
+    cookie_expire = "24h"
+    cookie_csrf_per_request = true
+    cookie_csrf_expire = "5m"
+    #set_authorization_header = true
+    #pass_authorization_header = true
+    set_xauthrequest = true
+    ssl_insecure_skip_verify = true
+    ssl_upstream_insecure_skip_verify = true
+    #pass_access_token = true
+    #pass_host_header = true
+    pass_user_headers = true
+    #cookie_secure = false
+    #cookie_samesite = "none"
+    oidc_groups_claim="clientGroupMapper"
+
+extraEnv:
+  - name: OAUTH2_PROXY_PROVIDER
+    value: 'keycloak-oidc'
+  - name: OAUTH2_PROXY_OIDC_ISSUER_URL
+    value: 'https://keycloak.dagonships.com/realms/testing'
+  - name: OAUTH2_PROXY_COOKIE_DOMAINS
+    value: '.microk8s.dagonships.com'
+  - name: OAUTH2_PROXY_EMAIL_DOMAINS
+    value: '*'
+  - name: OAUTH2_PROXY_WHITELIST_DOMAINS
+    value: '.microk8s.dagonships.com'
+  - name: OAUTH2_PROXY_INSECURE_OIDC_ALLOW_UNVERIFIED_EMAIL
+    value: 'true'
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "public"
+    cert-manager.io/cluster-issuer: "letsencrypt"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 16k
+  path: "/oauth2"
+  hosts:
+    - onms-core.opennms.microk8s.dagonships.com
+  tls:
+    - secretName: oauth2-proxy-tls
+      hosts: 
+        - onms-core.opennms.microk8s.dagonships.com
+
+sessionStorage:
+  type: redis
+redis:
+  enabled: true
+  architecture: standalone
