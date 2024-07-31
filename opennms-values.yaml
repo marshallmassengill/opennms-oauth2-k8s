@@ -1,0 +1,205 @@
+core:
+  configuration:
+    affinity: null
+    alecImage: {}
+    alwaysRollDeployment: true
+    cortexTssImage: {}
+    database:
+      password: 0p3nNM5
+      poolSize: 50
+      username: opennms
+    enableAcls: false
+    enableAlec: false
+    enableCortex: false
+    enableTssDualWrite: false
+    etcUpdatePolicy: never
+    http:
+      adminPassword: admin
+      restPassword: admin
+      restUsername: opennms
+    nodeSelector: null
+    ports:
+      karaf:
+        enabled: true
+        externalPort: 8101
+      syslog:
+        enabled: true
+        externalPort: 10514
+      trapd:
+        enabled: true
+        externalPort: 1162
+    rras:
+    - RRA:AVERAGE:0.5:1:2016
+    - RRA:AVERAGE:0.5:12:1488
+    - RRA:AVERAGE:0.5:288:366
+    - RRA:MAX:0.5:288:366
+    - RRA:MIN:0.5:288:366
+    storage:
+      etc: 1Gi
+      mibs: null
+      rrd: 1000Gi
+    tolerations: null
+  env: {}
+  image:
+    pullPolicy: IfNotPresent
+    repository: opennms/horizon
+    tag: ""
+  initContainers: []
+  inspector:
+    enabled: false
+  overlayConfigMaps: []
+  postConfigJob:
+    ttlSecondsAfterFinished: 300
+  resources:
+    limits:
+      cpu: "2"
+      memory: 8Gi
+    requests:
+      cpu: "2"
+      memory: 4Gi
+  terminationGracePeriodSeconds: 120
+  overlayConfigMaps:
+    - name: "jetty-properties"
+      path: "etc/opennms.properties.d"
+    - name: "header-preauth"
+      path: "jetty-webapps/opennms/WEB-INF/spring-security.d"
+    - name: "applicationcontext-spring-security"
+      path: "jetty-webapps/opennms/WEB-INF"
+createNamespace: false
+dependencies:
+  clusterRole: true
+  clusterRoleBinding: true
+  cortex:
+    bulkheadMaxWaitDuration: "9223372036854775807"
+    externalTagsCacheSize: 1000
+    maxConcurrentHttpConnections: 100
+    metricCacheSize: 1000
+    organizationId: ""
+    readTimeoutInMs: 1000
+    readUrl: http://cortex-query-frontend.shared.svc.cluster.local:8080/prometheus/api/v1
+    writeTimeoutInMs: 1000
+    writeUrl: http://cortex-distributor.shared.svc.cluster.local:8080/api/v1/push
+  elasticsearch:
+    configuration:
+      flows:
+        indexStrategy: daily
+        numShards: 1
+        replicationFactor: 0
+    hostname: ""
+    password: 31@st1c
+    port: 9200
+    username: elastic
+  kafka:
+    configuration:
+      saslMechanism: SCRAM-SHA-512
+      securityProtocol: SASL_SSL
+    hostname: ""
+    password: 0p3nNM5
+    port: 9093
+    username: opennms
+  loki:
+    caCert: ""
+    hostname: ""
+    password: ""
+    port: 3100
+    username: ""
+  postgresql:
+    caCert: ""
+    hostname: onms-db.shared.svc
+    password: P0stgr3s
+    port: 5432
+    sslfactory: org.postgresql.ssl.LibPQFactory
+    sslmode: require
+    username: postgres
+  route: true
+  securitycontext:
+    allowPrivilegeEscalation: true
+    allowedCapabilities:
+    - NET_BIND_SERVICE
+    - CAP_NET_RAW
+    securitycontextconstraints:
+      enabled: true
+      name: opennms-scc
+    serviceaccount:
+      enabled: true
+      name: opennms-sa
+  truststore:
+    content: ""
+    password: 0p3nNM5
+domain: microk8s.dagonships.com
+grafana:
+  configuration:
+    database:
+      image:
+        pullPolicy: IfNotPresent
+        repository: postgres
+        tag: "13"
+      password: Gr@f@n@
+      sslmode: require
+      username: grafana
+    ui:
+      adminPassword: admin
+  image:
+    pullPolicy: IfNotPresent
+    repository: opennms/helm
+    tag: 9.0.10
+  imageRenderer:
+    image:
+      pullPolicy: IfNotPresent
+      repository: grafana/grafana-image-renderer
+      tag: latest
+    replicaCount: 2
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+  replicaCount: 0
+  resources:
+    limits:
+      cpu: 200m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 1Gi
+imagePullSecrets: []
+ingress:
+  annotations: {
+    nginx.ingress.kubernetes.io/auth-response-headers: "X-Auth-Request-Preferred-Username,X-Auth-Request-User,X-Auth-Request-Email,X-Auth-Request-Groups",
+    nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$scheme://$host$request_uri",
+    nginx.ingress.kubernetes.io/auth-url: "https://$host/oauth2/auth"
+  }
+  certManager:
+    clusterIssuer: opennms-issuer
+  className: nginx
+multiTenant: false
+promtail:
+  image:
+    pullPolicy: IfNotPresent
+    repository: grafana/promtail
+    tag: latest
+  resources:
+    limits:
+      cpu: 50m
+      memory: 64Mi
+releaseNamespace: false
+sentinel:
+  configuration:
+    database:
+      poolSize: 25
+  image:
+    pullPolicy: IfNotPresent
+    repository: opennms/sentinel
+    tag: ""
+  replicaCount: 0
+  resources:
+    limits:
+      cpu: "2"
+      memory: 4Gi
+    requests:
+      cpu: "2"
+      memory: 2Gi
+  terminationGracePeriodSeconds: 60
+timezone: America/New_York
