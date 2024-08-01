@@ -25,7 +25,7 @@
      - Add to Access Token: Enabled
  4. Disable "Full scope allowed" for the dedicated client scopes.
  5. Define the groups that align with their names to the SECURITY ROLES for OpenNMS.  For a user this should be ROLE_USER.  For an administrator, that needs to be both ROLE_ADMIN,ROLE_USER.  More roles are listed here: https://docs.opennms.com/horizon/30/operation/user-management/security-roles.html
-   - This is just one method for handling group membership and roles.  You can play with keycloak and the claim it is using for this and get other methods to work that will match your environment.
+    - This is just one method for handling group membership and roles.  You can play with keycloak and the claim it is using for this and get other methods to work that will match your environment.
 
 ## Setup Oauth2-proxy
 These are the key configuration items needed:
