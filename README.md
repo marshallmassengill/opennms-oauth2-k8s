@@ -2,29 +2,30 @@
  1. Create a new realm (or use an existing realm but the realm must be defined within Oauth2-Proxy as well.
  2. Define a new client that is enabled for the standard OIDC flow and has client authentication enabled.
  3. Define client scopes that are within the "dedicated" client scope: 
-Scope 1:
- 	Name: username
- 	Mapper Type: User Attribute
- 	User Attribute: username
- 	Token Claim Name: preferred_username
- 	Claim JSON Type: String
- 	Add to ID Token: Enabled
- 	Add to Access Token: Enabled
- Scope 2:
- 	Name: client-group-mapper
- 	Mapper Type: Group Membership
- 	Token Claim Name: clientGroupMapper
- 	Add to ID Token: Enabled
- 	Add to Access Token: Enabled
- 	Add to userinfo: Enabled
- Scope 3:
- 	Name: aud-mapper-client
- 	Mapper Type: Audience
- 	Included Client Audience: oauth2-proxy (match it to your client name)
- 	Add to ID Token: Disabled
- 	Add to Access Token: Enabled
+   - Scope 1:
+     - Name: username
+     - Mapper Type: User Attribute
+     - User Attribute: username
+     - Token Claim Name: preferred_username
+     - Claim JSON Type: String
+     - Add to ID Token: Enabled
+     - Add to Access Token: Enabled
+   - Scope 2:
+     - Name: client-group-mapper
+     - Mapper Type: Group Membership
+     - Token Claim Name: clientGroupMapper
+     - Add to ID Token: Enabled
+     - Add to Access Token: Enabled
+     - Add to userinfo: Enabled
+   - Scope 3:
+     - Name: aud-mapper-client
+     - Mapper Type: Audience
+     - Included Client Audience: oauth2-proxy (match it to your client name)
+     - Add to ID Token: Disabled
+     - Add to Access Token: Enabled
  4. Disable "Full scope allowed" for the dedicated client scopes.
- 5. Define the groups that align with their names to the SECURITY ROLES for OpenNMS.  For a user this should be ROLE_USER.  For an administrator, that needs to be both ROLE_ADMIN,ROLE_USER.  More roles are listed here: Assign User Permissions
+ 5. Define the groups that align with their names to the SECURITY ROLES for OpenNMS.  For a user this should be ROLE_USER.  For an administrator, that needs to be both ROLE_ADMIN,ROLE_USER.  More roles are listed here: https://docs.opennms.com/horizon/30/operation/user-management/security-roles.html
+   - This is just one method for handling group membership and roles.  You can play with keycloak and the claim it is using for this and get other methods to work that will match your environment.
 
 ## Setup Oauth2-proxy
 These are the key configuration items needed:
